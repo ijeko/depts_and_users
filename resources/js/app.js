@@ -20,6 +20,13 @@ window.Vue = require('vue').default;
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
 Vue.component('example-component', require('./components/ExampleComponent.vue').default);
+Vue.component('user-index', require('./components/Users/UserIndex.vue').default);
+Vue.component('user-edit', require('./components/Users/UserEdit.vue').default);
+Vue.component('dept-index', require('./components/Departments/DeptIndex.vue').default);
+Vue.component('dept-edit', require('./components/Departments/DeptEdit.vue').default);
+Vue.component('dept-item', require('./components/Departments/Components/DeptItem.vue').default);
+Vue.component('user-item', require('./components/Users/Components/UserItem.vue').default);
+
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

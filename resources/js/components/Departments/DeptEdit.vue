@@ -1,119 +1,135 @@
 <template>
     <div>
+        <logo-component :isEditable=true :img=newFile @upload="uploadFile"></logo-component>
         <div class="mb-3">
-            <label for="nameInput" class="form-label">Имя <span class="text-danger" v-if="errors.name">{{errors.name[0]}}</span></label>
+            <label for="nameInput" class="form-label">Имя <span class="text-danger"
+                                                                v-if="errors.name">{{ errors.name[0] }}</span></label>
             <input
                 type="text"
                 class="form-control"
                 id="nameInput"
-                placeholder="Ваше имя"
+                placeholder="Название отдела"
                 v-model="newName"
             >
         </div>
         <div class="mb-3">
-            <label for="emailInput" class="form-label">Email  <span class="text-danger" v-if="errors.email">{{errors.email[0]}}</span></label>
-            <input
-                type="email"
-                class="form-control"
-                id="emailInput"
-                placeholder="name@example.com"
-                v-model="newEmail"
-            >
+            <label for="deptDescription" class="form-label">Описание</label>
+            <textarea class="form-control" id="deptDescription" rows="3" v-model="newDescription"></textarea>
         </div>
-        <div class="mb-3">
-            <label for="passwordInput" class="form-label">Пароль <span class="text-danger" v-if="errors.password">{{errors.password[0]}}</span></label>
-            <input
-                type="password"
-                class="form-control"
-                id="passwordInput"
-                v-model="newPassword"
-            >
-        </div>
+        <editable-user-list-item :attachedUsers=attachedUsers @setUsers=setCheckedUsers></editable-user-list-item>
         <div class="d-flex justify-content-between">
             <button type="button" class="btn btn-primary" :disabled="!isChanged" @click="onSubmit">Сохранить</button>
-            <a type="button" class="btn btn-secondary" :href="'/users'">Назад</a>
+            <a type="button" class="btn btn-secondary" :href="'/depts'">Назад</a>
         </div>
     </div>
 </template>
 
 <script>
 import axios from "axios";
+import LogoComponent from "./Components/LogoComponent";
+import EditableUserListItem from "./Components/EditableUserListItem";
 
 export default {
-    name: "userEdit",
-    data () {
+    name: "deptEdit",
+    components: {EditableUserListItem, LogoComponent},
+    data() {
         return {
             newName: '',
-            newEmail: '',
-            newPassword: '',
+            newDescription: '',
+            newFile: '',
+            attachedUsers: [],
+            isUsersChanged: false,
             errors: {
                 name: [],
-                email: [],
-                password: []
+                description: [],
             }
         }
     },
     props: {
-        user: {}
+        dept: {}
     },
     methods: {
-        fillUserData() {
-            if (this.user.id) {
-                this.newName = this.user.name
-                this.newEmail = this.user.email
+        setCheckedUsers(users) {
+            this.attachedUsers = users
+            this.isUsersChanged = true
+        },
+        fillDeptData() {
+            if (this.dept.id) {
+                this.newName = this.dept.name
+                this.newDescription = this.dept.description
+                this.newFile = this.dept.logo
+                this.attachedUsers = this.dept.users
             }
         },
         onSubmit() {
-            if (this.user.id) {
-                return this.updateUserData()
-            } return this.createNewUser()
+            if (this.dept.id) {
+                this.update()
+            } else {
+                this.create()
+            }
         },
-        updateUserData() {
-            axios.put('/users/'+this.user.id, {
-                id: this.user.id,
+        update() {
+            axios.put('/depts/' + this.dept.id, {
+                id: this.dept.id,
                 name: this.newName,
-                email: this.newEmail,
-                password: this.newPassword
+                description: this.newDescription,
+                users: this.attachedUsers,
+                logo: this.newFile
             })
                 .then(response => {
-                    console.log(response)
-                    this.user = response.data
-                    this.fillUserData()
+                    this.dept = response.data
+                    this.fillDeptData()
                 })
-            .catch(error  => {
-                console.log(error.response.data)
-                return this.errors = error.response.data.errors
-            })
+                .catch(error => {
+                    console.log(error.response.data)
+                    return this.errors = error.response.data.errors
+                })
         },
-        createNewUser() {
-            axios.post('/users', {
+        create() {
+            axios.post('/depts', {
                 name: this.newName,
-                email: this.newEmail,
-                password: this.newPassword
+                description: this.newDescription,
+                users: this.attachedUsers,
+                logo: this.newFile
             })
                 .then(response => {
                     console.log(response)
-                    this.user = response.data
-                    this.fillUserData()
+                    this.dept = response.data
                     this.redirect()
                 })
-                .catch(error  => {
+                .catch(error => {
                     console.log(error.response.data)
                     return this.errors = error.response.data.errors
                 })
         },
         redirect() {
-            alert(this.user.id)
-            window.location="/users/detail/"+this.user.id
-        }
+            window.location = "/depts/detail/" + this.dept.id
+        },
+
+        uploadFile(fileObject) {
+            let formData = new FormData();
+            formData.append('file', fileObject);
+            axios.post('/file/upload',
+                formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                }
+            ).then(response => {
+                this.newFile = response.data.file
+            })
+                .catch(error => {
+                    console.log('upload fails', error.response.data);
+                });
+        },
     },
     computed: {
-        isChanged () {
-            return !!(this.newName !== this.user.name || this.newEmail !== this.user.email || this.newPassword !== '');
-        }
+        isChanged() {
+            return !!(this.newName !== this.dept.name || this.newDescription !== this.dept.description || this.newFile !== this.dept.logo || this.isUsersChanged);
+        },
     },
     mounted() {
-        this.fillUserData()
+        this.fillDeptData()
     }
 }
 </script>

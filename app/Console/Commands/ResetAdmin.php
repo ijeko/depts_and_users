@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\User;
 use Illuminate\Console\Command;
 
 class ResetAdmin extends Command
@@ -11,14 +12,14 @@ class ResetAdmin extends Command
      *
      * @var string
      */
-    protected $signature = 'command:name';
+    protected $signature = 'dau:reset-admin';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Reset admin user to default';
 
     /**
      * Create a new command instance.
@@ -37,6 +38,20 @@ class ResetAdmin extends Command
      */
     public function handle()
     {
-        return 0;
+        $admin = User::query()->whereEmail('admin@test.loc')->first();
+
+        if ($admin) {
+            $admin->delete();
+
+            User::query()->create([
+                'name' => 'admin',
+                'email' => 'admin@test.loc',
+                'password' => bcrypt('password')
+            ]);
+
+            return 'Ok';
+        }
+
+        return 'User not found';
     }
 }

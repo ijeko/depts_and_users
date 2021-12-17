@@ -7,7 +7,7 @@
             <div class="card">
                 <div class="card-header">{{ __($data->name) }}</div>
                 <div class="card-body">
-                    <user-edit :user="{{ $data }}"></user-edit>
+                    <dept-edit :dept="{{ $data }}"></dept-edit>
                 </div>
             </div>
         </div>

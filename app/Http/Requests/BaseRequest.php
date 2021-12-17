@@ -13,7 +13,7 @@ class BaseRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +24,16 @@ class BaseRequest extends FormRequest
     public function rules()
     {
         return [
-            //
         ];
+    }
+
+    /**
+     * Returns an array of all request params
+     *
+     * @return array
+     */
+    public function getData(): array
+    {
+        return $this->all();
     }
 }

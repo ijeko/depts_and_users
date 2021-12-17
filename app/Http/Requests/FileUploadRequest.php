@@ -4,18 +4,8 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class FileUploadRequest extends FormRequest
+class FileUploadRequest extends BaseRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
-    public function authorize()
-    {
-        return false;
-    }
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -24,7 +14,7 @@ class FileUploadRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'file' => ['nullable', 'file', 'image']
         ];
     }
 }

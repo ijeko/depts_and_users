@@ -2,20 +2,9 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
 
-class DepartmentRequest extends FormRequest
+class DepartmentRequest extends BaseRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
-    public function authorize()
-    {
-        return false;
-    }
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -24,7 +13,45 @@ class DepartmentRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'id' => ['nullable', 'integer'],
+            'name' => ['required', 'string', 'min:3', 'max:20'],
+            'description' => ['required', 'string'],
+            'logo' => ['nullable', 'string'],
+            'users' => ['nullable', 'array'],
+        ];
+    }
+
+    /**
+     * Returns an array of users to be attached to this department
+     *
+     * @return array
+     */
+    public function getUsers(): array
+    {
+        return $this->get('users');
+    }
+
+    /**
+     * Returns a department id
+     *
+     * @return int
+     */
+    public function getDepartmentId(): int
+    {
+        return $this->get('id');
+    }
+
+    /**
+     * Returns an array of necessary params for creatin or updating department data
+     *
+     * @return array
+     */
+    public function getData(): array
+    {
+        return [
+            'name' => $this->get('name'),
+            'description' => $this->get('description'),
+            'logo' => $this->get('logo'),
         ];
     }
 }

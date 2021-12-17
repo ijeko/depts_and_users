@@ -5,9 +5,17 @@
     <div class="row justify-content-center">
         <div class="col-md-10">
             <div class="card">
-                <div class="card-header">{{ __('Dashboard') }}</div>
+                <div class="card-header d-flex justify-content-between">
+                    <div>{{ __('Пользователи') }}</div>
+                    <div><a class="btn btn-link text-primary text-decoration-none" href="/users/add">Создать</a></div>
+                </div>
                 <div class="card-body">
-                    <user-index :users="{{ $data }}"></user-index>
+                    @foreach($data as $user)
+                        <user-item :user="{{$user}}"></user-item>
+                    @endforeach
+                </div>
+                <div class="d-flex justify-content-center">
+                    {{$data->links()}}
                 </div>
             </div>
         </div>

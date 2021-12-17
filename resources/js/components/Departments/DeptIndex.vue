@@ -1,28 +1,28 @@
 <template>
     <div>
-        <user-item
-            v-for="user in users"
-            :key="user.id"
-            :user="user"
-            @delete="deleteUser"
+        <dept-item
+            v-for="dept in depts.items"
+            :key="dept.id"
+            :dept="dept"
+            @delete="deleteDept"
         />
     </div>
 </template>
 
 <script>
 
-import UserItem from "./Components/UserItem";
 import axios from "axios";
+import DeptItem from "./Components/DeptItem";
 
 export default {
-    name: "userIndex",
-    components: {UserItem},
+    name: "deptIndex",
+    components: {DeptItem},
     props: {
-        users: {},
+        depts: {},
     },
     methods: {
-        deleteUser(id) {
-            axios.delete('/users/'+id)
+        deleteDept(id) {
+            axios.delete('/depts/'+id)
                 .then(response => {
                     window.location = response.data
                 })
